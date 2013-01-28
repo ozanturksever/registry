@@ -3,9 +3,11 @@
 # All rights reserved.
 #
 import copy
+import time
 
 class Registry(object):
     def __init__(self, initial_values = {}):
+        self.version = time.time()
         self.__cached_values = initial_values
 
     def get(self, key, values=None):
@@ -34,13 +36,22 @@ class Registry(object):
             _key = key_levels[level]
             _value = values.get(_key)
             if level == last_level:
+                if values.get(_key) != value:
+                    self.update_version()
                 values[_key] = value
                 return
             if _value and isinstance(_value, dict):
                 return self.set('.'.join(key_levels[1:]), value, _value)
             else:
                 values[_key] = {}
+                self.update_version()
                 return self.set('.'.join(key_levels[1:]), value, values[_key])
+
+    def update_version(self, version=None):
+        if version:
+            self.version = version
+        else:
+            self.version = time.time()
 
     def is_nasted(self, key):
         return len(self.extract_key(key)) > 1
@@ -51,8 +62,12 @@ class Registry(object):
         return key.split('.')
 
     def get_values(self):
-        return self.__cached_values
+        return (self.version, self.__cached_values)
 
-    def set_values(self, values):
+    def set_values(self, values, version=None):
+        self.update_version(version)
         self.__cached_values = copy.copy(values)
+
+    def get_version(self):
+        return self.version
 

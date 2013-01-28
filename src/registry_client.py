@@ -27,9 +27,13 @@ class RegistryClient(object):
         return self.__registry.set(key, value)
 
     def _load(self):
-        values = self.__socket.send('get_values')
-        if values:
-            self.__registry.set_values(values)
+        try:
+            (version,values) = self.__socket.send('get_values')
+            if values:
+                self.__registry.set_values(values, version)
+        except:
+            pass
 
     def commit(self):
-        self.__socket.send('commit', self.__registry.get_values())
+        server_version = self.__socket.send('commit', self.__registry.get_values()[1])
+        self.__registry.update_version(server_version)

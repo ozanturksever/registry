@@ -41,10 +41,10 @@ class MsgThread(Thread):
                 self.socket.send(value)
             elif action == 'set':
                 self.registry.set(msg.get('key'), msg.get('value'))
-                self.socket.send('saved')
+                self.socket.send(self.registry.get_version())
             elif action == 'commit':
                 self.registry.commit(msg.get('data'))
-                self.socket.send('saved')
+                self.socket.send(self.registry.get_version())
             elif action == 'get_values':
                 values = self.registry.get_values()
                 self.socket.send(values)

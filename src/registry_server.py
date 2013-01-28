@@ -34,3 +34,6 @@ class RegistryServer(object, IRegistryServer):
 
     def get_values(self):
         return self.__registry.get_values()
+
+    def get_version(self):
+        return self.__registry.get_version()

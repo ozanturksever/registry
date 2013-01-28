@@ -9,7 +9,7 @@ from src.registry_client import RegistryClient
 class TestRegistryClient:
     def setUp(self):
         self.socket_mock = Mock()
-        self.socket_mock().send.return_value = {'key':'value','a':{'b':'val'}}
+        self.socket_mock().send.return_value = (1,{'key':'value','a':{'b':'val'}})
         self.patcher = patch('src.registry_client.Socket', self.socket_mock)
         self.patcher.start()
         self.client = RegistryClient()
@@ -46,6 +46,9 @@ class TestRegistryClient:
 
 
     def test_commit(self):
+        self.socket_mock().send.return_value = 1
         self.client.set('key1','value1')
         self.client.commit()
-        assert self.socket_mock().send.call_args[0] == ('commit',self.client._RegistryClient__registry.get_values())
+        assert self.socket_mock().send.call_args[0] == ('commit',self.client._RegistryClient__registry.get_values()[1])
+        assert self.client._RegistryClient__registry.get_version() == 1
+

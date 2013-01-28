@@ -15,3 +15,6 @@ class IRegistryServer:
 
     def get_values(self):
         """get_values"""
+
+    def get_version(self):
+        """"get_version"""

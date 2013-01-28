@@ -30,11 +30,11 @@ class TestRegistryServer:
 
     def test_commit(self):
         self.s.commit({'a':'b','c':'d'})
-        assert self.s._RegistryServer__registry.get_values() == {'a':'b','c':'d'}
+        assert self.s._RegistryServer__registry.get_values()[1] == {'a':'b','c':'d'}
 
     def test_get_values(self):
         self.s.commit({'a':'b'})
-        assert self.s.get_values() == {'a':'b'}
+        assert self.s.get_values()[1] == {'a':'b'}
 
     def test_listens(self):
         assert self.s.socket
