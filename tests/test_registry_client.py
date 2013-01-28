@@ -5,6 +5,7 @@
 from mock import Mock, patch
 from nose.tools import eq_
 from src.registry_client import RegistryClient
+import time
 
 class TestRegistryClient:
     def setUp(self):
@@ -44,11 +45,36 @@ class TestRegistryClient:
         value = self.client.get('x.y')
         eq_(value, 'z')
 
-
     def test_commit(self):
         self.socket_mock().send.return_value = 1
         self.client.set('key1','value1')
         self.client.commit()
         assert self.socket_mock().send.call_args[0] == ('commit',self.client._RegistryClient__registry.get_values()[1])
         assert self.client._RegistryClient__registry.get_version() == 1
+
+    def _setup_mock_for_periodically_update(self):
+        values = [
+            (2,{'key':'value','a':{'b':'val'}}),
+            (1,{'key':'value','a':{'b':'val'}})
+        ]
+        def return_values(arg):
+            if arg == 'get_values':
+                return values.pop()
+            if arg == 'get_version':
+                return 2
+        self.socket_mock().send.side_effect = return_values
+
+    def test_update_periodically(self):
+        self._setup_mock_for_periodically_update()
+        c = RegistryClient(update_period=0.01)
+        time.sleep(0.02)
+        assert c._RegistryClient__registry.get_version() == 2
+
+    def test_calls_callback_when_refresh(self):
+        self._setup_mock_for_periodically_update()
+        refresh_func_mock = Mock()
+
+        c = RegistryClient(update_period=0.01, refresh_callback=refresh_func_mock)
+        time.sleep(0.02)
+        assert refresh_func_mock.called
 
