@@ -8,7 +8,7 @@ import time
 class Registry(object):
     def __init__(self, initial_values = {}):
         self.version = time.time()
-        self.__cached_values = initial_values
+        self.__cached_values = copy.copy(initial_values)
 
     def get(self, key, values=None):
         if not values:
@@ -57,14 +57,20 @@ class Registry(object):
             _key = key_levels[level]
             value = values.get(_key)
             if level == last_level:
-                del values[_key]
-                self.update_version()
+                try:
+                    del values[_key]
+                    self.update_version()
+                except KeyError:
+                    pass
                 return
             if value and isinstance(value, dict):
                 return self.remove('.'.join(key_levels[1:]), value)
             else:
-                del values[_key]
-                self.update_version()
+                try:
+                    del values[_key]
+                    self.update_version()
+                except KeyError:
+                    pass
                 return
 
     def update_version(self, version=None):
@@ -90,6 +96,19 @@ class Registry(object):
 
     def get_version(self):
         return self.version
+
+    def merge(self, values, parent_key=None):
+        for key in values:
+            value = values.get(key)
+            if parent_key:
+                _key = '.'.join([parent_key, key])
+            else:
+                _key = key
+
+            if isinstance(value, dict):
+                self.merge(value, _key)
+            else:
+                self.set(_key, value)
 
 
 

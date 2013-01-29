@@ -8,8 +8,8 @@ from src.registry_server import RegistryServer
 
 class TestIntegration:
     def test_set(self):
-        server = RegistryServer()
-        client = RegistryClient()
+        server = RegistryServer(server_uri='tcp://127.0.0.1:11999')
+        client = RegistryClient(server_uri='tcp://127.0.0.1:11999')
         client.set('a','b')
         client.set('x.y','z')
         client.commit()

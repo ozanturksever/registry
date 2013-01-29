@@ -112,3 +112,16 @@ class TestRegistry:
         self.r.remove('a')
         new_version = self.r.get_version()
         assert old_version != new_version
+
+    def test_merge(self):
+        self.r.set('a',{'k0':'v0','k3':'v3'})
+        b={'a':{'k1':'v1','k3':'v33'},'c':'d'}
+        self.r.merge(b)
+        assert self.r.get('a.k0') == 'v0'
+        assert self.r.get('a.k1') == 'v1'
+        assert self.r.get('a.k3') == 'v33'
+        assert self.r.get('c') == 'd'
+
+    def test_ignode_when_key_not_found(self):
+        self.r.remove('notexist')
+

@@ -38,12 +38,17 @@ class UpdateThread(Thread):
 
 
 class RegistryClient(object, IRegistryClient):
-    def __init__(self, update_period=10, refresh_callback=None):
+    def __init__(self, update_period=10, refresh_callback=None, server_uri=None):
+        if server_uri:
+            self.server_uri = server_uri
+        else:
+            self.server_uri = SERVER_URI
+
         self.__refresh_callback = refresh_callback
         self.__update_period = update_period
-        self.__socket = Socket(SERVER_URI)
+        self.__socket = Socket(self.server_uri)
         self.__registry = Registry()
-        self._load()
+        self.refresh()
         self.__update_thread = UpdateThread(self, update_period)
         self.__update_thread.daemon = True
         self.__update_thread.start()
@@ -62,7 +67,7 @@ class RegistryClient(object, IRegistryClient):
         if self.__registry.get_version() != current_version:
             self._load()
             if self.__refresh_callback:
-                self.__refresh_callback()
+                self.__refresh_callback(self)
 
     def _load(self):
         try:
@@ -75,4 +80,7 @@ class RegistryClient(object, IRegistryClient):
     def commit(self):
         server_version = self.__socket.send('commit', self.__registry.get_values()[1])
         self.__registry.update_version(server_version)
+
+    def get_values(self):
+        return self.__registry.get_values()
 

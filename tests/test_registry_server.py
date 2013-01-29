@@ -2,7 +2,7 @@
 # Copyright (c) Innotim Yazilim Telekomunikasyon ve Danismanlik Ticaret LTD. STI.
 # All rights reserved.
 #
-from mock import Mock, patch
+from mock import Mock, patch, call
 from src.registry_server import RegistryServer
 
 class TestRegistryServer:
@@ -49,4 +49,23 @@ class TestRegistryServer:
         assert self.msg_thread_mock.call_args[0][0] == self.s
         assert self.msg_thread_mock.call_args[0][1] == self.s.socket
         assert self.msg_thread_mock().start.called
+
+    def test_calls_callback_when_changed(self):
+        refresh_func_mock = Mock()
+
+        c = RegistryServer({}, refresh_callback=refresh_func_mock)
+        c.set('a','b')
+        assert refresh_func_mock.called
+        assert refresh_func_mock.call_args == call(c)
+
+        refresh_func_mock.reset_mock()
+        c = RegistryServer({}, refresh_callback=refresh_func_mock)
+        c.set('a','b')
+        c.remove('a')
+        assert refresh_func_mock.called
+
+        refresh_func_mock.reset_mock()
+        c = RegistryServer({}, refresh_callback=refresh_func_mock)
+        c.commit({})
+        assert refresh_func_mock.called
 
