@@ -47,6 +47,26 @@ class Registry(object):
                 self.update_version()
                 return self.set('.'.join(key_levels[1:]), value, values[_key])
 
+    def remove(self, key, values=None):
+        if not values:
+            values = self.__cached_values
+
+        key_levels = self.extract_key(key)
+        last_level = len(key_levels)-1
+        for level in xrange(len(key_levels)):
+            _key = key_levels[level]
+            value = values.get(_key)
+            if level == last_level:
+                del values[_key]
+                self.update_version()
+                return
+            if value and isinstance(value, dict):
+                return self.remove('.'.join(key_levels[1:]), value)
+            else:
+                del values[_key]
+                self.update_version()
+                return
+
     def update_version(self, version=None):
         if version:
             self.version = version
@@ -70,4 +90,6 @@ class Registry(object):
 
     def get_version(self):
         return self.version
+
+
 

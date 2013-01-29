@@ -42,6 +42,9 @@ class MsgThread(Thread):
             elif action == 'set':
                 self.registry.set(msg.get('key'), msg.get('value'))
                 self.socket.send(self.registry.get_version())
+            elif action == 'remove':
+                self.registry.remove(msg.get('key'))
+                self.socket.send(self.registry.get_version())
             elif action == 'commit':
                 self.registry.commit(msg.get('data'))
                 self.socket.send(self.registry.get_version())

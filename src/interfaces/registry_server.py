@@ -10,6 +10,9 @@ class IRegistryServer:
     def set(self, key, value):
         """set"""
 
+    def remove(self, key, value):
+        """remove"""
+
     def commit(self, values):
         """commit"""
 

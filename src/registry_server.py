@@ -10,7 +10,7 @@ from src.server_socket import ServerSocket
 SERVER_URI = 'tcp://127.0.0.1:10000'
 
 class RegistryServer(object, IRegistryServer):
-    def __init__(self, initial_value = {}):
+    def __init__(self, initial_value={}):
         self.__registry = Registry(initial_value)
         self.socket = ServerSocket(SERVER_URI)
         self._start_msg_thread()
@@ -27,7 +27,10 @@ class RegistryServer(object, IRegistryServer):
         return self.__registry.get(key)
 
     def set(self, key, value):
-        return self.__registry.set(key,value)
+        return self.__registry.set(key, value)
+
+    def remove(self, key):
+        return self.__registry.remove(key)
 
     def commit(self, values):
         self.__registry.set_values(values)

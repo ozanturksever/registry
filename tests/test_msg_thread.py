@@ -49,6 +49,18 @@ class TestMsgThread:
         assert self.registry_server_mock.set.call_args == call('a','value')
         assert self.socket.send.call_args == call(1)
 
+    def test_remove(self):
+        self.registry_server_mock.get_version.return_value = 1
+        self.socket.recv.return_value = {
+            'action':'remove',
+            'key':'a'
+        }
+        self.m.start()
+        time.sleep(WAIT_TIME)
+        self.m.exit()
+        assert self.registry_server_mock.remove.call_args == call('a')
+        assert self.socket.send.call_args == call(1)
+
     def test_commit(self):
         self.registry_server_mock.get_version.return_value = 1
         self.socket.recv.return_value = {

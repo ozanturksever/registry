@@ -28,6 +28,11 @@ class TestRegistryServer:
         value = self.s.get('a')
         assert value == 'c'
 
+    def test_remove(self):
+        self.s.set('a','c')
+        self.s.remove('a')
+        assert not self.s.get('a')
+
     def test_commit(self):
         self.s.commit({'a':'b','c':'d'})
         assert self.s._RegistryServer__registry.get_values()[1] == {'a':'b','c':'d'}

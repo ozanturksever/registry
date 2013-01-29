@@ -45,6 +45,11 @@ class TestRegistryClient:
         value = self.client.get('x.y')
         eq_(value, 'z')
 
+    def test_remove(self):
+        self.client.set('key', 'setted')
+        value = self.client.remove('key')
+        assert not value
+
     def test_commit(self):
         self.socket_mock().send.return_value = 1
         self.client.set('key1','value1')

@@ -51,6 +51,18 @@ class TestRegistry:
         value = self.r.get('x.y')
         eq_(value, 'z')
 
+    def test_remove(self):
+        self.r.set('a','b')
+        self.r.remove('a')
+        value = self.r.get('a')
+        assert not value
+
+        self.r.set('a.a','c')
+        self.r.set('a.b','d')
+        self.r.remove('a.b')
+        assert not self.r.get('a.b')
+        assert self.r.get('a.a') == 'c'
+
     def test_get_values(self):
         (version,values) = self.r.get_values()
         assert values['key0'] == 'value0'
@@ -91,5 +103,12 @@ class TestRegistry:
     def test_update_version_when_set_values(self):
         old_version = self.r.get_version()
         self.r.set_values({'a':'b'})
+        new_version = self.r.get_version()
+        assert old_version != new_version
+
+    def test_update_version_when_remove(self):
+        self.r.set('a','b')
+        old_version = self.r.get_version()
+        self.r.remove('a')
         new_version = self.r.get_version()
         assert old_version != new_version

@@ -36,6 +36,7 @@ class UpdateThread(Thread):
     def exit(self):
         self._exit = True
 
+
 class RegistryClient(object, IRegistryClient):
     def __init__(self, update_period=10, refresh_callback=None):
         self.__refresh_callback = refresh_callback
@@ -53,6 +54,9 @@ class RegistryClient(object, IRegistryClient):
     def set(self, key, value):
         return self.__registry.set(key, value)
 
+    def remove(self, key):
+        return self.__registry.remove(key)
+
     def refresh(self):
         current_version = self.__socket.send('get_version')
         if self.__registry.get_version() != current_version:
@@ -62,12 +66,13 @@ class RegistryClient(object, IRegistryClient):
 
     def _load(self):
         try:
-            (version,values) = self.__socket.send('get_values')
+            (version, values) = self.__socket.send('get_values')
             self.__registry.set_values(values, version)
         except Exception, err:
-            print "Ops:",err
+            print "Ops:", err
             pass
 
     def commit(self):
         server_version = self.__socket.send('commit', self.__registry.get_values()[1])
         self.__registry.update_version(server_version)
+
