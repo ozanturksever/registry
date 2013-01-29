@@ -4,4 +4,5 @@
 #
 
 class IRegistryClient:
-    pass
+    def refresh(self):
+        """refresh"""

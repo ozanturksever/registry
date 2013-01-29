@@ -48,6 +48,9 @@ class MsgThread(Thread):
             elif action == 'get_values':
                 values = self.registry.get_values()
                 self.socket.send(values)
+            elif action == 'get_version':
+                values = self.registry.get_version()
+                self.socket.send(values)
             else:
                 self.socket.send('unknown')
 #            print "check",msg

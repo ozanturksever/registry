@@ -38,7 +38,6 @@ class UpdateThread(Thread):
 
 class RegistryClient(object, IRegistryClient):
     def __init__(self, update_period=10, refresh_callback=None):
-        self.__cached_values = {}
         self.__refresh_callback = refresh_callback
         self.__update_period = update_period
         self.__socket = Socket(SERVER_URI)
@@ -64,8 +63,7 @@ class RegistryClient(object, IRegistryClient):
     def _load(self):
         try:
             (version,values) = self.__socket.send('get_values')
-            if values:
-                self.__registry.set_values(values, version)
+            self.__registry.set_values(values, version)
         except Exception, err:
             print "Ops:",err
             pass
