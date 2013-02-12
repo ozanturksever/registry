@@ -2,7 +2,6 @@ cffi
 nose
 zmqpy
 msgpack-pure
-#pyzmq-ctypes
 py
 behave
 
